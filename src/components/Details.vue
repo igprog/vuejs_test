@@ -1,4 +1,13 @@
 <template>
+<div>
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+          <a class="navbar-brand" href="#">Test</a>
+          <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+              <a class="nav-link" href="#">Autor: Igor Gašparović</a>
+              </li>
+          </ul>
+        </nav>
     <div class="container mt-5">
         <div class="text-right">
             <button class="btn btn-outline-primary" @click="navigate()">Nazad</button>
@@ -21,11 +30,18 @@
                 <input v-model="record.description" type="text" class="form-control" id="description" >
             </div>
             <div class="text-right">
-                <button class="btn btn-outline-primary" @click="update()">Spremi</button>
-                <button class="btn btn-outline-danger" @click="remove()">&#10008 Briši</button>
+                <button class="btn btn-outline-primary" @click="update()">&#10004 Spremi</button>
+                <button class="btn btn-outline-danger" v-b-modal.deleterecordmodal>&#10008 Briši</button>
             </div>
-            <pre>{{record}}</pre>
+
+            <!-- Modal Delete -->
+            <b-modal id="deleterecordmodal" ref="modal_delete" title="Briši" @ok="remove" >
+                <form @submit.stop.prevent="deleteSubmit">
+                    Are you sure you want to delete this records?
+                </form>
+            </b-modal>
         </div>
+    </div>
 </template>
 
 <script>
@@ -46,7 +62,6 @@
                 router.go(-1);
             },
             update() {
-               debugger;
                 if (!this.record.name) {
                     alert('Please enter name')
                 } else {
@@ -55,9 +70,15 @@
             },
             handleUpdate() {
                 this.loadRecords();
-                alert('TODO')
-               // this.records[this.curridx] = this.record;
-               // this.saveToLocalStorage(this.records);
+                var id = this.record.id;
+                var record_ = this.record;
+                var records = this.records;
+                this.records.forEach(function(record, key){
+                    if(record.id==id){
+                        records[key] = record_;
+                    }
+                })
+                this.saveToLocalStorage(records);
             },
             saveToLocalStorage(x){
                 localStorage.setItem('records', JSON.stringify(x));
@@ -68,7 +89,21 @@
                 }
             },
             remove() {
-                alert('TODO')
+                this.deleteSubmit();
+            },
+            deleteSubmit() {
+                this.loadRecords();
+                var records = this.records;
+                var _records = this.records;
+                var id = this.record.id;
+                records.forEach(function(record, key){
+                    if(record.id==id){
+                        _records.splice(key, 1);
+                    }
+                })
+                this.records = _records;
+                this.saveToLocalStorage(this.records);
+                router.go(-1);
             }
         }
     }

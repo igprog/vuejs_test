@@ -1,12 +1,12 @@
 <template>
     <div>
         <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-        <a class="navbar-brand" href="#">Test</a>
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-            <a class="nav-link" href="#">Autor: Igor Gašparović</a>
-            </li>
-        </ul>
+          <a class="navbar-brand" href="#">Test</a>
+          <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+              <a class="nav-link" href="#">Autor: Igor Gašparović</a>
+              </li>
+          </ul>
         </nav>
 
         <div class="container mt-5">
@@ -32,22 +32,22 @@
         </b-modal>
 
         <!-- Modal Component -->
-        <!-- <b-modal id="editrecordmodal" ref="modal_edit" title="Zadatak" @ok="update" >
+        <b-modal id="editrecordmodal" ref="modal_edit" title="Zadatak" @ok="update" >
             <form @submit.stop.prevent="handleUpdate">
-            <div class="form-group">
-                <label for="date">Datum / vrijeme:</label>
-                <input v-model="record.date" type="text" class="form-control" id="date" >
-            </div>
-            <div class="form-group">
-                <label for="name">Ime zadatka:</label>
-                <input v-model="record.name" type="text" class="form-control" id="name" >
-            </div>
-            <div class="form-group">
-                <label for="description">Opis zadatka:</label>
-                <input v-model="record.description" type="text" class="form-control" id="description" >
-            </div>
+              <div class="form-group">
+                  <label for="date">Datum / vrijeme:</label>
+                  <input v-model="record_.date" type="text" class="form-control" id="date" >
+              </div>
+              <div class="form-group">
+                  <label for="name">Ime zadatka:</label>
+                  <input v-model="record_.name" type="text" class="form-control" id="name" >
+              </div>
+              <div class="form-group">
+                  <label for="description">Opis zadatka:</label>
+                  <input v-model="record_.description" type="text" class="form-control" id="description" >
+              </div>
             </form>
-        </b-modal> -->
+        </b-modal>
 
         <!-- Modal Delete -->
         <b-modal id="deleterecordmodal" ref="modal_delete" :title="delmsg" @ok="remove" @shown="displayrecords" >
@@ -97,28 +97,23 @@
                 <td>{{x.description}}</td>
                 <td>{{x.date}}</td>
                 <td>
-                    <button class="btn btn-outline-primary" @click="edit(x,k)">&#9998 Uredi</button>
-                    <router-link :to="{ name: 'Details', params: { record: x } }" class="btn btn-outline-primary">&#63 Detalji</router-link>
+                    <button class="btn btn-outline-primary" @click="edit(x, k)" v-b-modal.editrecordmodal>&#9998 Uredi</button>
+                    <router-link :to="{ name: 'Details', params: { record: x } }" class="btn btn-outline-primary">&#10067 Detalji</router-link>
                 </td>
                 </tr>
             </tbody>
             </table>
 
             <ul class="pagination">
-            <li class="page-item"><a class="page-link" href="#" @click="setPage(page-1)">Previous</a></li>
-            <li class="page-item" :class="x==page?'active':''" v-for="(x,k) in pages" :key="k"><a class="page-link" href="#" @click="setPage(x)">{{x}}</a></li>
-            <li class="page-item"><a class="page-link" href="#" @click="setPage(page+1)">Next</a></li>
+              <li class="page-item"><a class="page-link" href="#" @click="setPage(page-1)">Nazad</a></li>
+              <li class="page-item" :class="x==page?'active':''" v-for="(x,k) in pages" :key="k"><a class="page-link" href="#" @click="setPage(x)">{{x}}</a></li>
+              <li class="page-item"><a class="page-link" href="#" @click="setPage(page+1)">Naprijed</a></li>
             </ul>
 
         </div>
       </div>
     </div>
-        
-        <pre>{{filteredList}}</pre>
-        <h2>{{page}} ({{pageslice}})</h2>
-        <pre>{{pages}}</pre>
-        <pre>{{records}}</pre>
-
+  
     </div>
     
 </template>
@@ -135,6 +130,7 @@ export default {
         date: null,
         isselected: false
       },
+      record_: [],
       records: [],
       recordstoremove: [],
       delmsg: null,
@@ -172,22 +168,20 @@ export default {
       })
     },
     update(e) {
-      e.preventDefault();
-      if (!this.record.name) {
+      if (!this.record_.name) {
         alert('Please enter name')
       } else {
-        this.handleUpdate()
+        this.handleUpdate();
       }
     },
     handleUpdate() {
-      this.records[this.curridx] = this.record;
+      debugger;
+      this.records[this.curridx] = this.record_;
       this.saveToLocalStorage(this.records);
-      this.$nextTick(() => {
-        this.$refs.modal.hide()
-      })
+      this.$router.go(0);
     },
     edit(x, idx) {
-      this.record = x;
+      this.record_ =JSON.parse(JSON.stringify(x));
       this.curridx = idx;
     },
     remove() {
